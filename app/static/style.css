@@ -1,0 +1,28 @@
+h1,
+h4,
+p, 
+a {
+  text-align: center;
+}
+.btn,
+input,
+a {
+  display: block;
+  margin: auto;
+}
+#result {
+  font-size: 20px;
+  margin-top: 10px;
+  background-color: lightgray;
+}
+.btn {
+  margin-top: 5px;
+  width: 100px;
+}
+input[type=text] {
+  width: 75%;
+}
+ul {
+  list-style-type: none;
+}
+

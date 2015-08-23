@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <title>Document</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+      <link rel="stylesheet" href="static/style.css">
+    </head>
+    <body>
+      <div class="row">
+        <h1>Mini url</h1>
+        <p>URL minification service</p>
+        <div class="col-md-4 col-md-offset-4">
+          <form action="/" method="POST">
+            <input type="text" name="url"/>
+            <input class="btn btn-success" type="submit" value="Go!"/>
+          </form>
+        <a id="result" href="{{ result }}" target="_blank">{{ result }}</a>
+        </div>
+        <div class="col-md-4">
+          <h4>Recent links</h4>
+          <ul>
+            {% for link in links %}
+            <li><a href="{{ home }}/{{ link }}" target="_blank">{{ home }}/{{ link }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </body>
+</html>
