@@ -22,8 +22,6 @@ def url_check(url):
     '''Attempt to ensure a valid url'''
     if len(url.split('://')) != 2:
         url = 'http://' + url
-    if url[-4:] != '.com':
-        url = url + '.com'
     return url
 
 
