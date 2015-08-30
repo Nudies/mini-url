@@ -11,8 +11,10 @@
         <h1>Mini url</h1>
         <p>URL minification service</p>
         <div class="col-md-4 col-md-offset-4">
+        {% from "forms/macros.html" import render_field %}
           <form action="/" method="POST">
-            <input type="text" name="url"/>
+            {{ form.csrf_token }}
+            {{ render_field(form.url, class="input text", placeholder="url") }}
             <input class="btn btn-success" type="submit" value="Go!"/>
           </form>
         <a id="result" href="{{ result }}" target="_blank">{{ result }}</a>
