@@ -6,7 +6,7 @@ class MiniUrl(unittest.TestCase):
 	
 	def setUp(self):
 		self.driver = webdriver.Firefox()
-		self.driver.get('http://loki.ryanjsiemens.com')
+		self.driver.get('http://localhost:5000')
 
 	def tearDown(self):
 		self.driver.close()
