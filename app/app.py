@@ -9,22 +9,25 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import TextField
 from wtforms.validators import Required
 
+from config import config
+
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Config
-DEBUG = True
-SECRET_KEY = 'this-needs-to-be-changed'
-USERNAME = 'admin'
-PASSWORD = 'default'
+DEBUG = config['debug']
+SECRET_KEY = config['key']
+USERNAME = config['username']
+PASSWORD = config['password']
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, config['db'])
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 db = SQLAlchemy(app)
 
 # globals
-address = 'http://localhost:5000'  # This is our address
+address = config['address']  # This is our address
 
 
 # Form
@@ -54,6 +57,11 @@ def get_hashes():
     return hashes
 
 
+def get_recent(amount):
+    hashes = get_hashes()
+    return hashes[:-(amount):-1]
+
+
 def url_check(url):
     '''Attempt to ensure a valid url'''
     if len(url.split('://')) != 2:
@@ -78,7 +86,7 @@ def index():
     form = UrlForm(request.form)
     if form.validate_on_submit():
         new_hash = build_rand(5)
-        new_url = MiniURL(hash=new_hash, url=form.url.data)
+        new_url = MiniURL(hash=new_hash, url=url_check(form.url.data))
         try:
             db.session.add(new_url)
             db.session.commit()
@@ -86,12 +94,12 @@ def index():
             flash('There was a problem with your request. It\'s not you,'
                   ' it\'s us.')
         return render_template('index.html',
-                               result='http://localhost:5000/%s' % new_hash,
-                               links=get_hashes(),
+                               result=address + '/' + new_hash,
+                               links=get_recent(10),
                                home=address,
                                form=form)
     return render_template('index.html',
-                           links=get_hashes(),
+                           links=get_recent(10),
                            home=address,
                            form=form)
 
@@ -104,9 +112,10 @@ def lookup(lookup):
     except:
         form = UrlForm(request.form)
         return render_template('index.html',
-                               links=get_hashes(),
+                               links=get_recent(10),
                                home=address,
                                form=form)
+
 
 if __name__ == '__main__':
     app.run()

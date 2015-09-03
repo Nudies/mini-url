@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
       <title>Mini URL</title>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
       <link rel="stylesheet" href="static/css/style.css">
@@ -12,7 +13,7 @@
         <p>URL minification service</p>
         <div class="col-md-4 col-md-offset-4">
           {% from "forms/macros.html" import render_field %}
-          <form action="/" method="POST">
+          <form action="." method="POST">
             <div class="input-group">
               {{ form.csrf_token }}
               {{ render_field(form.url, class="form-control", placeholder="url") }}
@@ -21,7 +22,7 @@
               </span>
             </div>
           </form>
-          <a id="result" href="{{ result }}" target="_blank">{{ result }}</a>
+          <a id="result" href="http://{{ result }}" target="_blank">{{ result }}</a>
         </div>
       </div>
       <div id="recent"class="row">  
@@ -30,9 +31,9 @@
             <li>
               <h4>See what people are minifying!</h4>
             </li>
-            {% for link in links[:-10:-1] %}
+            {% for link in links %}
             <li>
-              <a href="{{ home }}/{{ link }}" target="_blank">{{ home }}/{{ link }}</a>
+              <a href="http://{{ home }}/{{ link }}" target="_blank">{{ home }}/{{ link }}</a>
             </li>
             {% endfor %}
           </ul>
