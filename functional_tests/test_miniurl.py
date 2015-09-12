@@ -3,7 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-class MiniUrl(unittest.TestCase):
+class BaseMiniUrl(unittest.TestCase):
+    '''MiniUrl base testing class'''
 
     def setUp(self):
         self.driver = webdriver.Firefox()
@@ -18,6 +19,9 @@ class MiniUrl(unittest.TestCase):
         input.send_keys(link)
         input.send_keys(Keys.RETURN)
         return self.driver.find_element_by_id('result')
+
+
+class MiniUrl(BaseMiniUrl):
 
     def test_can_submit_link(self):
         # User sees a text input, puts in a url and
