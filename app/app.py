@@ -59,7 +59,7 @@ def get_hashes():
 
 def get_recent(amount):
     hashes = get_hashes()
-    return hashes[:-(amount):-1]
+    return hashes[:-(amount + 1):-1]
 
 
 def url_check(url):
