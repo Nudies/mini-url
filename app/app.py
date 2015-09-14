@@ -3,7 +3,7 @@ import random
 import string
 import datetime
 
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, session
 from flask.ext.wtf import Form
 from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import TextField
@@ -51,6 +51,25 @@ class MiniURL(db.Model):
         return '<MiniUrl %r:%r>' % (self.hash, self.url)
 
 
+class Stats(db.Model):
+    __tablename__ = 'stats'
+    id = db.Column(db.Integer, primary_key=True)
+    platform = db.Column(db.String(120))
+    browser = db.Column(db.String(120))
+    version = db.Column(db.String(60))
+    language = db.Column(db.String(120))
+    ua_string = db.Column(db.String(256))
+    ip = db.Column(db.String(256))
+
+    def __init__(self, plat, browser, ver, lang, ua, ip):
+        self.platform = plat
+        self.browser = browser
+        self.version = ver
+        self.language = lang
+        self.ua_string = ua
+        self.ip = ip
+
+
 # Helper functions
 def get_hashes():
     hashes = [x.hash for x in MiniURL.query.all()]
@@ -80,7 +99,47 @@ def build_rand(size):
     return rand
 
 
+def get_browsers(query):
+    browsers = {}
+    for entry in query:
+        browser = getattr(entry, 'browser')
+        if not browsers.get(browser, False):
+            browsers[browser] = 1
+        else:
+            browser[browser] += 1
+    return browsers
+
+
+def get_platforms(query):
+    platforms = {}
+    for entry in query:
+        platform = getattr(entry, 'platform')
+        if not platforms.get(platform, False):
+            platforms[platform] = 1
+        else:
+            platforms[platform] += 1
+    return platforms
+
+
 # Controllers
+@app.before_request
+def unique_visits():
+    if session.get('unique_visit', False):
+        return
+    session['unique_visit'] = True
+    ua = request.user_agent
+    stats = Stats(
+                ua.platform,
+                ua.browser,
+                ua.version,
+                ua.language,
+                ua.string,
+                request.remote_addr
+            )
+    db.session.add(stats)
+    db.session.commit()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = UrlForm(request.form)
@@ -102,6 +161,19 @@ def index():
                            links=get_recent(10),
                            home=address,
                            form=form)
+
+
+@app.route('/stats')
+def stats():
+    stats = Stats.query.all()
+    s = ''
+    browsers = get_browsers(stats)
+    platforms = get_platforms(stats)
+    for k, v in browsers.items():
+        s += 'browser: %s, count: %s\n' % (k, v)
+    for k, v in platforms.items():
+        s += 'platform: %s, count: %s\n' % (k, v)
+    return render_template('stats.html')
 
 
 @app.route('/<lookup>')
