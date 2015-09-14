@@ -4,7 +4,7 @@ import string
 import datetime
 import json
 
-from flask import Flask, request, redirect, render_template, flash, session
+from flask import Flask, request, redirect, render_template, flash, session, url_for
 from flask.ext.wtf import Form
 from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import TextField
@@ -194,6 +194,8 @@ def data(param):
     elif param == 'months':
         months = get_months(stats)
         return json.dumps(months)
+    else:
+        return redirect(url_for('index'))
 
 
 @app.route('/<lookup>')
@@ -202,11 +204,7 @@ def lookup(lookup):
         url = MiniURL.query.filter_by(hash=lookup).first()
         return redirect(url.url, code=302)
     except:
-        form = UrlForm(request.form)
-        return render_template('index.html',
-                               links=get_recent(10),
-                               home=address,
-                               form=form)
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
