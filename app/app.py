@@ -108,7 +108,7 @@ def get_browsers(query):
         if not browsers.get(browser, False):
             browsers[browser] = 1
         else:
-            browser[browser] += 1
+            browsers[browser] += 1
     return browsers
 
 
