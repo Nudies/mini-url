@@ -2,6 +2,7 @@ import os
 import random
 import string
 import datetime
+import json
 
 from flask import Flask, request, redirect, render_template, flash, session
 from flask.ext.wtf import Form
@@ -54,6 +55,7 @@ class MiniURL(db.Model):
 class Stats(db.Model):
     __tablename__ = 'stats'
     id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     platform = db.Column(db.String(120))
     browser = db.Column(db.String(120))
     version = db.Column(db.String(60))
@@ -165,15 +167,19 @@ def index():
 
 @app.route('/stats')
 def stats():
-    stats = Stats.query.all()
-    s = ''
-    browsers = get_browsers(stats)
-    platforms = get_platforms(stats)
-    for k, v in browsers.items():
-        s += 'browser: %s, count: %s\n' % (k, v)
-    for k, v in platforms.items():
-        s += 'platform: %s, count: %s\n' % (k, v)
     return render_template('stats.html')
+
+
+@app.route('/data/<param>')
+def data(param):
+    stats = Stats.query.all()
+    if param == 'browsers':
+        browsers = get_browsers(stats)
+        return json.dumps(browsers)
+    elif param == 'platforms':
+        platforms = get_platforms(stats)
+        return json.dumps(platforms)
+
 
 
 @app.route('/<lookup>')
