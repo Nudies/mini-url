@@ -123,6 +123,18 @@ def get_platforms(query):
     return platforms
 
 
+def get_months(query):
+    months = {}
+    for entry in query:
+        month = getattr(entry, 'timestamp')
+        month = month.strftime('%b')
+        if not months.get(month, False):
+            months[month] = 1
+        else:
+            months[month] += 1
+    return months
+
+
 # Controllers
 @app.before_request
 def unique_visits():
@@ -179,7 +191,9 @@ def data(param):
     elif param == 'platforms':
         platforms = get_platforms(stats)
         return json.dumps(platforms)
-
+    elif param == 'months':
+        months = get_months(stats)
+        return json.dumps(months)
 
 
 @app.route('/<lookup>')

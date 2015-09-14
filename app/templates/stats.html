@@ -8,6 +8,7 @@
       <link rel="stylesheet" href="static/css/style.css">
       <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
       <script src="static/js/Chart.min.js"></script>
+      <script src="static/js/script.js"></script>
       <style>
         body { 
           background: #2a2a2a;
@@ -24,7 +25,11 @@
     </head>
     <body>
       <div class="row">
-        <div class="col-md-4 col-md-offset-2">
+        <div class="col-md-4">
+          <h3>Usage over time</h3>
+          <canvas id="usage" width="300" height="150"></canvas>
+        </div>
+        <div class="col-md-4">
           <h3>Browsers</h3>
           <canvas id="browsers" width="300" height="150"></canvas>
         </div>
@@ -33,42 +38,6 @@
           <canvas id="platform" width="300" height="150"></canvas>
         </div>
       </div>
-      <script>
-        var browsers, platforms;
-        var browserData = [];
-        var platformData = [];
-        var browserChart = document.getElementById("browsers").getContext("2d");
-        var platformChart = document.getElementById("platform").getContext("2d");
-        var pieOptions = {
-          segmentShowStroke : false,
-          animateScale : true
-        }
-
-        function get_data(link, data, dataSet, chart) {
-          $.getJSON(link, function(result){
-            data = result;
-            build_data(data, dataSet);
-            new Chart(chart).Doughnut(dataSet, pieOptions);
-          });
-        }
-
-        function build_data(data, dataSet) {
-          for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-              dataSet.push(
-                {
-                  value: data[key],
-                  label: key,
-                  color: '#'+Math.floor(Math.random()*16777215).toString(16)
-                }
-              );
-            }
-          }
-        }
-
-        get_data('/data/browsers', browsers, browserData, browserChart);
-        get_data('/data/platforms', platforms, platformData, platformChart);
-      </script>
     </body>
 </html>
 
