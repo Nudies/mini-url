@@ -47,6 +47,7 @@ class MiniURL(db.Model):
     def __init__(self, hash=None, url=None):
         self.hash = hash
         self.url = url
+        self.timestamp = datetime.datetime.utcnow()
 
     def __repr__(self):
         return '<MiniUrl %r:%r>' % (self.hash, self.url)
@@ -70,6 +71,7 @@ class Stats(db.Model):
         self.language = lang
         self.ua_string = ua
         self.ip = ip
+        self.timestamp = datetime.datetime.utcnow()
 
 
 # Helper functions
