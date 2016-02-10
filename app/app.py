@@ -1,37 +1,36 @@
 import os
-import random
-import string
-import datetime
 import json
+import string
+import random
+import datetime
 
-from flask import Flask, request, redirect, render_template, flash, session, url_for
 from flask.ext.wtf import Form
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask import Flask, request, redirect, render_template, flash, session, url_for
 from wtforms import TextField
 from wtforms.validators import Required
 
-from config import config
-
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-# Config
-DEBUG = config['debug']
-SECRET_KEY = config['key']
-USERNAME = config['username']
-PASSWORD = config['password']
-
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, config['db'])
-
-app = Flask(__name__)
-app.config.from_object(__name__)
-db = SQLAlchemy(app)
 
 # globals
-address = config['address']  # This is our address
+ADDRESS = 'localhost:5000'
 
 
-# Form
+# Config
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app = Flask(__name__)
+app.config.update(
+    DEBUG=True,
+    SECRET_KEY='this-needs-to-be-changed',
+    USERNAME='admin',
+    PASSWORD='default',
+    SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(basedir, 'app.db'),
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+)
+db = SQLAlchemy(app)
+
+
+# Forms
 class UrlForm(Form):
     url = TextField('URL', [Required()])
 
@@ -145,13 +144,13 @@ def unique_visits():
     session['unique_visit'] = True
     ua = request.user_agent
     stats = Stats(
-                ua.platform,
-                ua.browser,
-                ua.version,
-                ua.language,
-                ua.string,
-                request.remote_addr
-            )
+        ua.platform,
+        ua.browser,
+        ua.version,
+        ua.language,
+        ua.string,
+        request.remote_addr
+    )
     db.session.add(stats)
     db.session.commit()
 
@@ -168,15 +167,19 @@ def index():
         except:
             flash('There was a problem with your request. It\'s not you,'
                   ' it\'s us.')
-        return render_template('index.html',
-                               result=address + '/' + new_hash,
-                               links=get_recent(10),
-                               home=address,
-                               form=form)
-    return render_template('index.html',
-                           links=get_recent(10),
-                           home=address,
-                           form=form)
+        return render_template(
+            'index.html',
+            result=ADDRESS + '/' + new_hash,
+            links=get_recent(10),
+            home=ADDRESS,
+            form=form
+        )
+    return render_template(
+        'index.html',
+        links=get_recent(10),
+        home=ADDRESS,
+        form=form
+    )
 
 
 @app.route('/stats')
@@ -210,4 +213,5 @@ def lookup(lookup):
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run()
