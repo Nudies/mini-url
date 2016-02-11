@@ -6,7 +6,8 @@ import datetime
 
 from flask.ext.wtf import Form
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask import Flask, request, redirect, render_template, flash, session, url_for
+from flask import Flask, Response, request, redirect, render_template, \
+    flash, session, url_for
 from wtforms import TextField
 from wtforms.validators import Required
 
@@ -192,13 +193,13 @@ def data(param):
     stats = Stats.query.all()
     if param == 'browsers':
         browsers = get_browsers(stats)
-        return json.dumps(browsers)
+        return Response(json.dumps(browsers), mimetype='application/json')
     elif param == 'platforms':
         platforms = get_platforms(stats)
-        return json.dumps(platforms)
+        return Response(json.dumps(platforms), mimetype='application/json')
     elif param == 'months':
         months = get_months(stats)
-        return json.dumps(months)
+        return Response(json.dumps(months), mimetype='application/json')
     else:
         return redirect(url_for('index'))
 
